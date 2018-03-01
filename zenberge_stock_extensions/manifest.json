@@ -1,0 +1,27 @@
+{
+  "name": "zenberge stock Extensions",
+  "description": "Base Level Extension",
+  "version": "1.0",
+  "icons": {
+    "48": "images/logo1.png"
+  },
+  "browser_action": {
+    "default_popup": "index.html",
+    "default_icon": "./images/logo.png"
+  },
+  "manifest_version": 2,
+  "permissions": ["notifications", "*://sqt.gtimg.cn/*", "background"],
+  "options_page": "options.html",
+  "background": {
+    "scripts": ["js/comm.js", "js/bg.js"]
+  },
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "MacCtrl+Shift+F"
+      },
+      "description": "Opens index.html"
+    }
+  }
+}

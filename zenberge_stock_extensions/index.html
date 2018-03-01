@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Hello Extensions </title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link type="text/css" rel="stylesheet" href="./css/materialize.min.css" media="screen,projection" />
+
+  <link rel="stylesheet" href="./css/main.css">
+</head>
+
+<body>
+  <div class="app-body top-line" id="app">
+    <div class="pt10 pl15 f16 bor-b33">
+      自选组合变动
+    </div>
+    <div class="plr15">
+      <table>
+        <thead>
+          <tr>
+            <th>名称</th>
+            <th>代码</th>
+            <th>价格</th>
+            <th>涨跌幅</th>
+            <th>市盈率</th>
+            <th>市值</th>
+            <th>预警线</th>
+          </tr>
+        </thead>
+
+        <tbody id="tbody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script src="./js/jquery-3.2.1.min.js"></script>
+  <script src="./js/comm.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>options page </title>
+    <!-- 引入样式 -->
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="./css/materialize.min.css" media="screen,projection" />
+
+    <link rel="stylesheet" href="./css/main.css">
+</head>
+
+<body>
+    <div id="app" class="top-line">
+        <div class="ptb25 pl15 f20 bor-b33 flexbox flex-vceter">
+            <div>
+                    <img src="./images/logo.png" width="32" alt=""> 
+
+            </div>
+            <span class="flex">自选组合配置</span>
+        </div>
+        <div class="plr15">
+            <table>
+                <thead>
+                    <tr>
+                        <th>公司名称</th>
+                        <th>公司代码</th>
+                        <th>当前价格</th>
+                        <th>涨跌幅</th>
+                        <th>市盈率</th>
+                        <th>市值</th>
+                        <th>预警线</th>
+                        <th>是否预警</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tbody"> 
+                    <!-- <tr>
+                        <td>老板电器</td>
+                        <td>000345</td>
+                        <td>+54.00</td>
+                        <td>1.40%</td>
+                        <td>456亿</td>
+                        <td>300亿~456亿</td>
+                        <td>
+                            <div class="switch">
+                                <label>
+                                    <input type="checkbox">
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            <a class="pointer" id="eidtItem">编辑</a>
+                            <a class="pointer pl15 red-text" id="delItem">删除</a>
+                        </td>
+                    </tr> -->
+                </tbody>
+            </table>
+
+            <div class="mt20 pointer ptb5 bor-dashed text-center" id="addStockBtn">
+                <i class="material-icons">add</i>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Structure -->
+    <div id="addStock" class="modal">
+        <input type="hidden" id="editModel">
+        <div class="modal-content">
+            <h5 id="mtitle">添加股票</h5>
+            <div>
+                <form class="col s12">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input id="stockcode" type="text" class="validate">
+                            <label for="stockcode" data-error="wrong" data-success="right">请输入股票代码</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input id="stockname" disabled type="text" class="validate">
+                            <label for="stockname" data-error="wrong" data-success="right">股票名称</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s8">
+                            <input id="upnum" type="number" class="validate">
+                            <label for="upnum">请输入预警上限值(亿)</label>
+                        </div>
+                        <div class="input-field col s4">
+                            <p class="range-field">
+                                <em class="ltip">0</em>
+                                <input type="range" id="upnumRange" min="0" max="100" />
+                                <em class="rtip">100</em>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s8">
+                            <input id="downnum" type="number" class="validate">
+                            <label for="downnum">请输入预警下限值(亿)</label>
+                        </div> 
+                        <div class="input-field col s4 rbox">
+                            <p class="range-field">
+                                <em class="ltip">-100</em>
+                                <input type="range" id="downnumRange" min="-100" max="0" />
+                                <em class="rtip">0</em>
+                            </p>
+                        </div> 
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="mb25">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">取消</a>
+                <a href="#!" id="doConfirm" class="waves-effect waves-green btn-flat">确定</a>
+            </div>
+        </div>
+    </div>
+    <div id="deleModal" class="modal">
+        <input type="hidden" id="deleModel">
+        <div class="modal-content">
+            <h5>提示</h5>
+            <div class="f15 cup mt20">
+                是否确定删除该股票？
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">取消</a>
+            <a href="#!" class="waves-effect waves-green btn-flat" id="deleConfirm">确定</a>
+        </div>
+    </div>
+</body>
+<!-- 引入组件库 -->
+<script src="./js/jquery-3.2.1.min.js"></script>
+<script src="./js/materialize.min.js"></script>
+<script src="./js/comm.js"></script>
+<script src="./js/options.js"></script>
+
+</html>
