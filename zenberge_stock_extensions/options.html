@@ -18,10 +18,15 @@
     <div id="app" class="top-line">
         <div class="ptb25 pl15 f20 bor-b33 flexbox flex-vceter">
             <div>
-                    <img src="./images/logo.png" width="32" alt=""> 
+                <img src="./images/logo.png" width="32" alt="">
 
             </div>
             <span class="flex">自选组合配置</span>
+            <div class="pr20">
+                <a class="waves-effect waves-light btn" id="addStockBtnTop">
+                    <i class="material-icons">add</i>
+                </a> 
+            </div>
         </div>
         <div class="plr15">
             <table>
@@ -34,12 +39,13 @@
                         <th>市盈率</th>
                         <th>市值</th>
                         <th>预警线</th>
+                        <th>距离预警</th>
                         <th>是否预警</th>
                         <th>操作</th>
                     </tr>
                 </thead>
 
-                <tbody id="tbody"> 
+                <tbody id="tbody">
                     <!-- <tr>
                         <td>老板电器</td>
                         <td>000345</td>
@@ -104,14 +110,14 @@
                         <div class="input-field col s8">
                             <input id="downnum" type="number" class="validate">
                             <label for="downnum">请输入预警下限值(亿)</label>
-                        </div> 
+                        </div>
                         <div class="input-field col s4 rbox">
                             <p class="range-field">
                                 <em class="ltip">-100</em>
                                 <input type="range" id="downnumRange" min="-100" max="0" />
                                 <em class="rtip">0</em>
                             </p>
-                        </div> 
+                        </div>
                     </div>
                 </form>
             </div>
@@ -136,6 +142,17 @@
             <a href="#!" class="waves-effect waves-green btn-flat" id="deleConfirm">确定</a>
         </div>
     </div>
+    <div id="peModal" class="modal">
+            <div class="modal-content">
+                <h5>PE图表</h5>
+                <div class="f15 cup mt20">
+                    <img src="" width="80%" id="pehook" alt="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">确定</a> 
+            </div>
+        </div>
 </body>
 <!-- 引入组件库 -->
 <script src="./js/jquery-3.2.1.min.js"></script>

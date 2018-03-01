@@ -37,12 +37,8 @@ function request(code) {
 class StocksManager {
   constructor() {
     this.KEY = "stockchoice_";
-    this.currentTpl = null;
-    let ls = localStorage.getItem(this.KEY);
-    if (ls) {
-      ls = JSON.parse(ls);
-    }
-    this.list = ls || [];
+    this.currentTpl = null;  
+    this.list = this.getLatestList() || [];
   }
   getLatestList(){
     let ls = localStorage.getItem(this.KEY);
@@ -130,8 +126,8 @@ function buildTableRowSimple(item, index, data) {
         <td class="${getTxColor(data[31])}">${data[32]}%</td>
         <td>${data[39]}</td>
         <td>${data[45]}亿</td>
-        <td class="${item.upnum ? "cwarn" : ""}">${
-    item.upnum ? item.downnum + "亿~" + item.upnum + "亿" : "未设置"
+        <td class="${item.upnum && item.warningSetting ? "cwarn" : ""}">${
+    item.upnum && item.warningSetting ? item.downnum + "亿~" + item.upnum + "亿" : "未设置"
   }</td> 
     </tr>
     `;
@@ -141,10 +137,16 @@ function buildTableRow(item, index, data) {
   delay().then(v => {
     showNotification(item, data[45]);
   });
+  let wav = '-';
+  if(item.upnum && item.warningSetting){
+    let t1 = 1- Math.abs(item.upnum - data[45]) / data[45], 
+    t2 = 1 - Math.abs(item.downnum - data[45]) / data[45];
+    wav = t1 > t2 ? ''+((t1*100).toFixed(2)) : ''+(t2*100).toFixed(2);
+  }
   return `
       <tr>
-          <td>${data[1]}</td>
-          <td>${data[2]}</td>
+          <td class="stname pointer" data-index="${index}" data-code="${data[2]}">${data[1]}</td>
+          <td class="stname pointer" data-index="${index}" data-code="${data[2]}">${data[2]}</td>
           <td class="${getTxColor(data[31])}">${data[3]}</td>
           <td class="${getTxColor(data[31])}">${data[32]}%</td>
           <td>${data[39]}</td>
@@ -152,6 +154,7 @@ function buildTableRow(item, index, data) {
           <td class="${item.upnum && item.warningSetting ? "cwarn" : ""}">${
     item.upnum && item.warningSetting ? item.downnum + "亿~" + item.upnum + "亿" : "未设置"
   }</td>
+          <td><span class="p3 ${ +wav > 90 ? 'pink ctw' :''  }">${wav}%</span> </td>
           <td>
               <div class="switch">
                   <label>
@@ -172,7 +175,7 @@ function buildTableRow(item, index, data) {
 
 async function render(stocklist, view) {
   let t = [];
-  $("#tbody").html("");
+  // $("#tbody").html("");
   if (stocklist.length === 0) {
     $("#tbody").append(`
         <tr>
@@ -191,7 +194,22 @@ async function render(stocklist, view) {
     // t.push(str);
     htmlStr.push(str);
   }
-
+  
   $("#tbody").append(htmlStr.join(""));
   //   $("#tbody").html(t.join(""));
+}
+
+function isTradeTime(){
+  let d = new Date()
+  let day = d.getDay();
+  let hour = d.getHours();
+  let mimute = d.getMinutes();
+  let t = +(hour + '.' + mimute);
+  if(day >5){
+    return false;
+  }
+  if( (t >= 9.30 && t <= 11.30) || ( t >= 13 && t <= 15.0)){
+    return true;
+  }
+  return false
 }

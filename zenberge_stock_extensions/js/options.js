@@ -33,6 +33,10 @@ $(document).ready(function() {
 
   $("#addStock").modal({});
   $("#deleModal").modal({});
+  $("#peModal").modal({});
+  $('#addStockBtnTop').click(v=>{
+    $("#addStockBtn").trigger('click');
+  })
   $("#addStockBtn").click(() => {
     let data = initModal();
     setModalData(data);
@@ -152,11 +156,22 @@ $(document).ready(function() {
       });
     }
   });
+
+  $('#tbody').on('click','.stname',v =>{
+    let index = $(v.target).data("index");
+    if (!stockManager.list[+index]) return;
+    let url = `http://biz.finance.sina.com.cn/company/compare/img_syl_compare.php?stock_code=${ $(v.target).data('code') }&limit=265`
+    $('#pehook').attr('src',url);
+    $('#peModal').modal('open');
+  })
   render(stockManager.list || []);
 
   let renderCount = 0;
   setInterval(() => {
-    render(stockManager.list || []);
-    console.log(`renderCount: ${renderCount++}`);
-  }, 5000);
+    let flag = isTradeTime();
+    if(flag){
+      render(stockManager.list || []);
+      console.log(`renderCount: ${renderCount++}`);
+    }
+  }, 30000);
 });
