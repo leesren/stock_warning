@@ -54,41 +54,41 @@ $(document).ready(function() {
       [+index].remove();
   });
   $("#tbody").on("click", ".eidtItem", event => {
-    
     let index = $(event.target).data("index");
     if (!stockManager.list[+index]) return;
     let data = initModal("edit", stockManager.list[+index]);
     $("#editModel").val(index);
     setModalData(data);
-    request(data.stockcode).then(result => { 
-        $("#addStock").modal("open");
-        stockManager.currentTpl = result;
-        let u = $('#upnum').val(), d = $('#downnum').val()
-        if(u){ 
-            $('#upnumRange').val((u * 100.0 / result[45] - 100).toFixed(0))
-        }
-        if(d){ 
-            $('#downnumRange').val((d * 100.0 / result[45] - 100).toFixed(0))
-        }
+    request(data.stockcode).then(result => {
+      $("#addStock").modal("open");
+      stockManager.currentTpl = result;
+      let u = $("#upnum").val(),
+        d = $("#downnum").val();
+      if (u) {
+        $("#upnumRange").val((u * 100.0 / result[45] - 100).toFixed(0));
+      }
+      if (d) {
+        $("#downnumRange").val((d * 100.0 / result[45] - 100).toFixed(0));
+      }
     });
   });
-  $('#upnumRange').on('input',v=>{ 
-      let n = 1 + v.target.value/100.0;
-      if(stockManager.currentTpl){
-          let t = (stockManager.currentTpl[45] * n).toFixed(0)
-          $('#upnum').val( t );
-          Materialize.updateTextFields();
-      }
-  })
-  $('#downnumRange').on('input',v=>{
-      // console.log(v.target.value);
-      let n = 1 + v.target.value/100.0;
-      if(stockManager.currentTpl){
-          let t = (stockManager.currentTpl[45] * n).toFixed(0)
-          $('#downnum').val( t );
-          Materialize.updateTextFields();
-      }
-  })
+  $("#upnumRange").on("input", v => {
+    let n = 1 + v.target.value / 100.0;
+    if (stockManager.currentTpl) {
+      let t = (stockManager.currentTpl[45] * n).toFixed(0);
+      $("#upnum").val(t);
+      Materialize.updateTextFields();
+    }
+  });
+  $("#downnumRange").on("input", v => {
+    // console.log(v.target.value);
+    let n = 1 + v.target.value / 100.0;
+    if (stockManager.currentTpl) {
+      let t = (stockManager.currentTpl[45] * n).toFixed(0);
+      $("#downnum").val(t);
+      Materialize.updateTextFields();
+    }
+  });
   $("#doConfirm").click(() => {
     let stockname = $("#stockname").val() || "";
     let stockcode = $("#stockcode").val() || "";
@@ -104,8 +104,7 @@ $(document).ready(function() {
     }
     let i = $("#editModel").val();
     let item = stockManager.list[+i];
-    if (stockManager.currentTpl && item) {
-      
+    if (stockManager.currentTpl && i != "") {
       if (item.upnum != upnum || item.downnum != downnum) {
         stockManager.updateItem(i, {
           upnum: upnum,
@@ -139,13 +138,23 @@ $(document).ready(function() {
       request(v).then(result => {
         $("#stockname").val(result[1]);
         stockManager.currentTpl = result;
+        
+
+        if (!$("#upnum").val()) {
+          $("#upnum").val((result[45] * 1.2).toFixed(2));
+          $("#upnumRange").val("20");
+        }
+        if (!$("#downnum").val()) {
+          $("#downnum").val((result[45] * 0.8).toFixed(2));
+          $("#downnumRange").val("-20");
+        }
         Materialize.updateTextFields();
       });
     }
   });
   render(stockManager.list || []);
 
-  let renderCount= 0 ;
+  let renderCount = 0;
   setInterval(() => {
     render(stockManager.list || []);
     console.log(`renderCount: ${renderCount++}`);
