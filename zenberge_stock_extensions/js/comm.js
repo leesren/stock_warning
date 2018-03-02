@@ -96,17 +96,18 @@ function delay(t = 500) {
 function showNotification(item, flag) {
   if (item.warningSetting) {
     //   console.log(`upnum: ${item.upnum} downnum:${item.downnum} flag:${flag}`);
+    let n = item.stockname + ' '+ item.stockcode;
     if (item.upnum - flag <= 0) {
       chrome.notifications.create({
         type: "basic",
-        title: `【${item.stockname}】涨幅接近预警线`,
+        title: `【${n}】涨幅接近预警线`,
         message: "您设置的涨幅预警线已经出现，请及时处理",
         iconUrl: "../images/stock-up-64.png"
       });
     } else if (item.downnum - flag >= 0) {
       chrome.notifications.create({
         type: "basic",
-        title: `【${item.stockname}】跌幅预警线提醒`,
+        title: `【${n}】跌幅预警线提醒`,
         message: "您设置的跌幅预警线已经出现，请及时处理",
         iconUrl: "../images/stock-down-64.png"
       });
@@ -118,7 +119,22 @@ function buildTableRowSimple(item, index, data) {
   delay().then(v => {
     showNotification(item, data[45]);
   });
-  return `
+  let wav = '-';
+  if(item.upnum && item.warningSetting){
+    let t1 = 1- Math.abs(item.upnum - data[45]) / data[45], 
+    t2 = 1 - Math.abs(item.downnum - data[45]) / data[45];
+    wav = t1 > t2 ? ''+((t1*100).toFixed(2)) : ''+(t2*100).toFixed(2);
+  }
+  let obj = {
+    stockname:data[1],
+    stockcode:data[2],
+    price:data[3],
+    upAndDown:data[32],
+    pe:data[39],
+    value:data[45],
+    wave:wav
+  }
+  let str =  `
     <tr>
         <td>${data[1]}</td>
         <td>${data[2]}</td>
@@ -129,8 +145,51 @@ function buildTableRowSimple(item, index, data) {
         <td class="${item.upnum && item.warningSetting ? "cwarn" : ""}">${
     item.upnum && item.warningSetting ? item.downnum + "亿~" + item.upnum + "亿" : "未设置"
   }</td> 
+  <td><span class="p3 ${ +wav > 90 ? 'pink ctw' :''  }">${wav}%</span> </td>
     </tr>
     `;
+    return {str,obj}
+}
+
+function buildTableRowHtml(obj,simple=false){
+  if(simple){
+    return `
+    <tr>
+      <td class="stname pointer" data-index="${obj.index}" data-code="${obj.stockcode}">${ obj.stockname}</td>
+      <td class="stname pointer" data-index="${obj.index}" data-code="${obj.stockcode}">${obj.stockcode}</td>
+      <td class="${ obj.upAndDownColor}">${obj.price}</td>
+      <td class="${ obj.upAndDownColor}">${ obj.upAndDown}%</td>
+      <td>${obj.pe}</td>
+      <td>${obj.value}亿</td>
+      <td class="${obj.warningColor}">${ obj.warningValue}</td>
+      <td><span class="p3 ${ +obj.wav > 90 ? 'pink ctw' :''}">${obj.wav}%</span> </td>
+    </tr>
+    `
+  }
+  return `
+      <tr>
+          <td class="stname pointer" data-index="${obj.index}" data-code="${obj.stockcode}">${ obj.stockname}</td>
+          <td class="stname pointer" data-index="${obj.index}" data-code="${obj.stockcode}">${obj.stockcode}</td>
+          <td class="${ obj.upAndDownColor}">${obj.price}</td>
+          <td class="${ obj.upAndDownColor}">${ obj.upAndDown}%</td>
+          <td>${obj.pe}</td>
+          <td>${obj.value}亿</td>
+          <td class="${obj.warningColor}">${ obj.warningValue}</td>
+          <td><span class="p3 ${ +obj.wav > 90 ? 'pink ctw' :''}">${obj.wav}%</span> </td>
+          <td>
+              <div class="switch">
+                  <label>
+                      <input class="warningSetting" data-index="${obj.index}" type="checkbox" ${obj.warningSetting ? "checked" : ""}>
+                      <span class="lever"></span>
+                  </label>
+              </div>
+          </td>
+          <td>
+              <a class="pointer eidtItem" data-index="${obj.index}">编辑</a>
+              <a class="pointer delItem pl15 red-text" data-index="${obj.index}">删除</a>
+          </td>
+      </tr>
+  `
 }
 
 function buildTableRow(item, index, data) {
@@ -143,59 +202,85 @@ function buildTableRow(item, index, data) {
     t2 = 1 - Math.abs(item.downnum - data[45]) / data[45];
     wav = t1 > t2 ? ''+((t1*100).toFixed(2)) : ''+(t2*100).toFixed(2);
   }
-  return `
-      <tr>
-          <td class="stname pointer" data-index="${index}" data-code="${data[2]}">${data[1]}</td>
-          <td class="stname pointer" data-index="${index}" data-code="${data[2]}">${data[2]}</td>
-          <td class="${getTxColor(data[31])}">${data[3]}</td>
-          <td class="${getTxColor(data[31])}">${data[32]}%</td>
-          <td>${data[39]}</td>
-          <td>${data[45]}亿</td>
-          <td class="${item.upnum && item.warningSetting ? "cwarn" : ""}">${
-    item.upnum && item.warningSetting ? item.downnum + "亿~" + item.upnum + "亿" : "未设置"
-  }</td>
-          <td><span class="p3 ${ +wav > 90 ? 'pink ctw' :''  }">${wav}%</span> </td>
-          <td>
-              <div class="switch">
-                  <label>
-                      <input class="warningSetting" data-index="${index}" type="checkbox" ${
-    item.warningSetting ? "checked" : ""
-  }>
-                      <span class="lever"></span>
-                  </label>
-              </div>
-          </td>
-          <td>
-              <a class="pointer eidtItem" data-index="${index}">编辑</a>
-              <a class="pointer delItem pl15 red-text" data-index="${index}">删除</a>
-          </td>
-      </tr>
-      `;
+  let obj = {
+    index:index,// 索引
+    stockname:data[1],// 名称
+    stockcode:data[2], // 代码
+    price:data[3],// 当前价
+    upAndDown:data[32],// 涨跌幅
+    upAndDownColor:getTxColor(data[31]),// 涨跌颜色
+    pe:data[39],// 市盈率
+    value:data[45],// 市值
+    wav:wav,// 预警 
+    warningSetting:item.warningSetting,// 设置
+    warningValue: item.upnum && item.warningSetting ? item.downnum + "亿~" + item.upnum + "亿" : "未设置",// 设置值
+    warningColor:item.upnum && item.warningSetting ? "cwarn" : ""// 设置预警颜色
+  }
+  // let str = `
+  //     <tr>
+  //         <td class="stname pointer" data-index="${obj.index}" data-code="${obj.stockcode}">${ obj.stockname}</td>
+  //         <td class="stname pointer" data-index="${obj.index}" data-code="${data[2]}">${data[2]}</td>
+  //         <td class="${ obj.upAndDownColor}">${obj.price}</td>
+  //         <td class="${ obj.upAndDownColor}">${ obj.upAndDown}%</td>
+  //         <td>${obj.pe}</td>
+  //         <td>${obj.value}亿</td>
+  //         <td class="${obj.warningColor}">${ obj.warningValue}</td>
+  //         <td><span class="p3 ${ +obj.wav > 90 ? 'pink ctw' :''}">${obj.wav}%</span> </td>
+  //         <td>
+  //             <div class="switch">
+  //                 <label>
+  //                     <input class="warningSetting" data-index="${obj.index}" type="checkbox" ${obj.warningSetting ? "checked" : ""}>
+  //                     <span class="lever"></span>
+  //                 </label>
+  //             </div>
+  //         </td>
+  //         <td>
+  //             <a class="pointer eidtItem" data-index="${obj.index}">编辑</a>
+  //             <a class="pointer delItem pl15 red-text" data-index="${obj.index}">删除</a>
+  //         </td>
+  //     </tr>
+  //     `;
+      return obj;
 }
 
 async function render(stocklist, view) {
   let t = [];
   // $("#tbody").html("");
   if (stocklist.length === 0) {
-    $("#tbody").append(`
+    $("#tbody").html(`
         <tr>
             <td class="text-center" colspan="${$("th").length}">暂无数据...</td>
         </tr>
     `);
     return;
   }
-  let htmlStr = [];
+  let htmlStr = [], objList = [];
   for (let index = 0; index < stocklist.length; index++) {
     let el = stocklist[index];
     let resp = await request(el.stockcode);
-    let str = view
-      ? buildTableRowSimple(el, index, resp)
-      : buildTableRow(el, index, resp);
+    // let { str,obj } = view
+    //   ? buildTableRowSimple(el, index, resp)
+    //   : buildTableRow(el, index, resp);
     // t.push(str);
-    htmlStr.push(str);
+    // htmlStr.push(str);
+    let obj = buildTableRow(el, index, resp);
+    objList.push(obj)
   }
-  
-  $("#tbody").append(htmlStr.join(""));
+  let ss = window['sortKey'];
+  if(ss){
+    objList.sort((a,b)=>{
+      if(window['sortKeyType']){
+        return a[ss] - b[ss];
+      }else{
+        return b[ss] - a[ss];
+      }
+      
+    })
+  }
+  objList.map(v=>{
+    htmlStr.push(buildTableRowHtml(v,view ) )
+  })
+  $("#tbody").html(htmlStr.join(""));
   //   $("#tbody").html(t.join(""));
 }
 
@@ -237,3 +322,13 @@ function thsData(){
     } 
   } 
 }
+
+$('th').click((e)=>{
+  let key = $(e.target).data('key');
+  window['sortKey'] = key;
+  let sortType = $(e.target).attr('sort');
+  sortType = sortType=='1' ? 0 : 1;
+  $(e.target).attr('sort',sortType);
+  window['sortKeyType'] = sortType; 
+  render(stocksManager.list , location.href.indexOf('index') != -1);
+})

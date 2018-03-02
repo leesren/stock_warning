@@ -38,8 +38,7 @@
   48: 跌停价
 */
 
+var stocksManager = new StocksManager(); 
 $(document).ready(function() {
-  let stocksManager = new StocksManager(); 
   render(stocksManager.list,'simple')
-
 })

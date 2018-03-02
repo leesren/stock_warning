@@ -116,6 +116,7 @@ $(document).ready(function() {
         });
       }
     } else {
+
       stockManager.addItem({
         stockcode: stockManager.currentTpl[2],
         stockname: stockManager.currentTpl[1],
@@ -157,6 +158,7 @@ $(document).ready(function() {
     }
   });
 
+
   $('#tbody').on('click','.stname',v =>{
     let index = $(v.target).data("index");
     if (!stockManager.list[+index]) return;
@@ -175,3 +177,4 @@ $(document).ready(function() {
     }
   }, 30000);
 });
+

@@ -18,6 +18,7 @@
 .cdown{color: #029633}
 .top-line{border-top: 4px solid #764ba2}
 #addStock .row{margin-bottom: 10px}
+#addStock input{margin: 0 0 10px 0}
 .app-body{width: 600px; max-height: 540px; overflow-y: auto}
 .ltip{
     position: absolute;
@@ -31,7 +32,24 @@
     top: 50%;
     transform: translateY(-50%);
 }
-
+th[sort="1"],th[sort="0"]{position: relative;}
+th[sort]:after{
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    content: '';
+    display: block;
+    
+    width: 16px;
+    height: 16px;
+    transform: translateY(-50%);
+}
+th[sort="1"]:after{
+    background: url(../images/up-sort.png) no-repeat;
+}
+th[sort="0"]:after{
+    background: url(../images/down-sort.png) no-repeat;
+}
 /* Let's get this party started */
 ::-webkit-scrollbar {
     width: 6px;
