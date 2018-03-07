@@ -16,22 +16,32 @@ function china_stock_pre(code = "") {
     return "";
   }
 }
+
+let headers = new Headers({'Host':'sqt.gtimg.cn','Referer':'http://gu.qq.com/sh601360/gp','User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36'});
+
 function request(code) {
-  return new Promise((resolve, reject) => {
-    fetch(
-      `http://sqt.gtimg.cn/utf8/q=${china_stock_pre(code).toLowerCase()}${code}`
-    )
-      .then(v => {
-        return v.text();
-      })
-      .then(v => {
-        let resp = v.split('"')[1];
-        resolve(resp.split("~"));
-      })
-      .catch(v => {
-        reject(v);
-      });
-  });
+  let url = `http://sqt.gtimg.cn/utf8/q=${china_stock_pre(code).toLowerCase()}${code}&r=${Math.random()}`;
+  return requestJq(url);
+  // return new Promise((resolve, reject) => {
+  //   fetch( url,{method: 'GET',headers:headers})
+  //     .then(v => {
+  //       return v.text();
+  //     })
+  //     .then(v => {
+  //       let resp = v.split('"')[1];
+  //       resolve(resp.split("~"));
+  //     })
+  //     .catch(v => {
+  //       reject(v);
+  //     });
+  // });
+}
+
+function requestJq(url){
+  return $.get(url).then(v=>{
+      let resp = v.split('"')[1];
+      return resp.split("~");
+  })
 }
 
 class StocksManager {
