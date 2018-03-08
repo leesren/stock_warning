@@ -124,43 +124,7 @@ function showNotification(item, flag) {
     }
   }
 }
-
-function buildTableRowSimple(item, index, data) {
-  delay().then(v => {
-    showNotification(item, data[45]);
-  });
-  let wav = '-';
-  if(item.upnum && item.warningSetting){
-    let t1 = 1- Math.abs(item.upnum - data[45]) / data[45], 
-    t2 = 1 - Math.abs(item.downnum - data[45]) / data[45];
-    wav = t1 > t2 ? ''+((t1*100).toFixed(2)) : ''+(t2*100).toFixed(2);
-  }
-  let obj = {
-    stockname:data[1],
-    stockcode:data[2],
-    price:data[3],
-    upAndDown:data[32],
-    pe:data[39],
-    value:data[45],
-    wave:wav
-  }
-  let str =  `
-    <tr>
-        <td>${data[1]}</td>
-        <td>${data[2]}</td>
-        <td class="${getTxColor(data[31])}">${data[3]}</td>
-        <td class="${getTxColor(data[31])}">${data[32]}%</td>
-        <td>${data[39]}</td>
-        <td>${data[45]}亿</td>
-        <td class="${item.upnum && item.warningSetting ? "cwarn" : ""}">${
-    item.upnum && item.warningSetting ? item.downnum + "亿~" + item.upnum + "亿" : "未设置"
-  }</td> 
-  <td><span class="p3 ${ +wav > 90 ? 'pink ctw' :''  }">${wav}%</span> </td>
-    </tr>
-    `;
-    return {str,obj}
-}
-
+ 
 function buildTableRowHtml(obj,simple=false){
   if(simple){
     return `
@@ -212,6 +176,13 @@ function buildTableRow(item, index, data) {
     t2 = 1 - Math.abs(item.downnum - data[45]) / data[45];
     wav = t1 > t2 ? ''+((t1*100).toFixed(2)) : ''+(t2*100).toFixed(2);
   }
+  let formatNum = (v)=>{
+    let s = v/10000;
+    if(s >= 1){
+      return s.toFixed(2)+'万'
+    }
+    return v;
+  }
   let obj = {
     index:index,// 索引
     stockname:data[1],// 名称
@@ -223,33 +194,9 @@ function buildTableRow(item, index, data) {
     value:data[45],// 市值
     wav:wav,// 预警 
     warningSetting:item.warningSetting,// 设置
-    warningValue: item.upnum && item.warningSetting ? item.downnum + "亿~" + item.upnum + "亿" : "未设置",// 设置值
+    warningValue: item.upnum && item.warningSetting ? formatNum(item.downnum) + "亿~" + formatNum(item.upnum) + "亿" : "未设置",// 设置值
     warningColor:item.upnum && item.warningSetting ? "cwarn" : ""// 设置预警颜色
-  }
-  // let str = `
-  //     <tr>
-  //         <td class="stname pointer" data-index="${obj.index}" data-code="${obj.stockcode}">${ obj.stockname}</td>
-  //         <td class="stname pointer" data-index="${obj.index}" data-code="${data[2]}">${data[2]}</td>
-  //         <td class="${ obj.upAndDownColor}">${obj.price}</td>
-  //         <td class="${ obj.upAndDownColor}">${ obj.upAndDown}%</td>
-  //         <td>${obj.pe}</td>
-  //         <td>${obj.value}亿</td>
-  //         <td class="${obj.warningColor}">${ obj.warningValue}</td>
-  //         <td><span class="p3 ${ +obj.wav > 90 ? 'pink ctw' :''}">${obj.wav}%</span> </td>
-  //         <td>
-  //             <div class="switch">
-  //                 <label>
-  //                     <input class="warningSetting" data-index="${obj.index}" type="checkbox" ${obj.warningSetting ? "checked" : ""}>
-  //                     <span class="lever"></span>
-  //                 </label>
-  //             </div>
-  //         </td>
-  //         <td>
-  //             <a class="pointer eidtItem" data-index="${obj.index}">编辑</a>
-  //             <a class="pointer delItem pl15 red-text" data-index="${obj.index}">删除</a>
-  //         </td>
-  //     </tr>
-  //     `;
+  } 
       return obj;
 }
 
